@@ -7,14 +7,26 @@ import time
 
 BLACK = pygame.Color(0, 0, 0)
 WHITE = pygame.Color(255, 255, 255)
+
 bg = 'image/bg.png'
+blue = 'image/blue.png'
+yellow = 'image/yellow.png'
+pink = 'image/pink.png'
+green = 'image/green.png'
+red = 'image/red.png'
+orange = 'image/orange.png'
+cyan = 'image/cyan.png'
+purple = "image/purple.png"
 
 bg_image = pygame.image.load(bg)
-bg_image = pygame.image.load(bg)
-bg_image = pygame.image.load(bg)
-bg_image = pygame.image.load(bg)
-bg_image = pygame.image.load(bg)
-bg_image = pygame.image.load(bg)
+blue_image = pygame.image.load(blue)
+yellow_image = pygame.image.load(yellow)
+pink_image = pygame.image.load(pink)
+green_image = pygame.image.load(green)
+red_image = pygame.image.load(red)
+orange_image = pygame.image.load(orange)
+cyan_image = pygame.image.load(cyan)
+purple_image = pygame.image.load(purple)
 
 pinksq = pygame.image.load('image/pink.png')
 pinksq_rect = pinksq.get_rect()
@@ -22,7 +34,7 @@ gameover = pygame.image.load('image/gameover.png')
 gameover_rect = gameover.get_rect()
 
 
-class Map():
+class Map:
     def __init__(self):
         self.netz = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -34,8 +46,21 @@ class Map():
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ]
+        self.netz_color = [[bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
+                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg], ]
+
         self.bg_image = pygame.image.load(bg)
         self.setted = []
+        self.score = 0
+        self.score_font = pygame.font.SysFont('microsoft Yahei', 40)
 
     def canput(self, object, row, line):
         if np.shape(object)[0] + row <= 10 and np.shape(object)[1] + line <= 10:
@@ -64,11 +89,13 @@ class Map():
             if self.netz[i] == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]:
                 for j in range(10):
                     self.netz[i][j] = 0
+                    self.score += 1
         for i in range(10):
             line = [j[i] for j in self.netz]
             if line == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]:
                 for j in range(10):
                     self.netz[j][i] = 0
+                    self.score += 1
 
     def buildmap(self, display):
         for obj in self.setted:
@@ -100,10 +127,13 @@ class Map():
                 x = x + 40
             y = y + 40
 
+    def show_score(self, display):
+        self.font_surface = self.score_font.render(('SCORE: ' + str(self.score)), False, (255, 200, 10))
+        display.blit(self.font_surface, (240, 20))
 
-class Square():
-    def Square_gen(self):
 
+class Square:
+    def square_gen(self):
         self.shape, self.color = np.array(random.choice(objectlib.objectlib), dtype=object)  # 随机创建图形
         self.color_image = pygame.image.load(self.color)
         self.color_rect = self.color_image.get_rect()
@@ -127,7 +157,7 @@ def run_game():
     pygame.display.set_caption('1010!')
     map = Map()
     sq = Square()
-    sq.Square_gen()
+    sq.square_gen()
     click = False
     clock = pygame.time.Clock()
     pickup = False
@@ -136,6 +166,7 @@ def run_game():
         set = False
         display.fill(BLACK)
         map.buildmap(display)
+        map.show_score(display)
         gamecon = False
         for row in range(10):
             for line in range(10):
@@ -167,7 +198,7 @@ def run_game():
             if map.canput(sq.shape, row, line):
                 map.set(sq.shape, row, line, sq.color)
                 map.check_eliminate()
-                sq.Square_gen()
+                sq.square_gen()
         if not click:
             sq.blitsquare(display, (300, 600))
         elif click:
@@ -177,4 +208,5 @@ def run_game():
         clock.tick(120)
 
 
-run_game()
+if __name__ == '__main__':
+    run_game()
