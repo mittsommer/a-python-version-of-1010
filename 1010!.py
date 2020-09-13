@@ -28,8 +28,9 @@ orange_image = pygame.image.load(orange)
 cyan_image = pygame.image.load(cyan)
 purple_image = pygame.image.load(purple)
 
-pinksq = pygame.image.load('image/pink.png')
-pinksq_rect = pinksq.get_rect()
+color_lib = {'bg': bg_image, 'blue': blue_image, 'yellow': yellow_image, 'pink': pink_image, 'green': green_image,
+             'red': red_image, 'orange': orange_image, 'cyan': cyan_image, 'purple': purple_image}
+
 gameover = pygame.image.load('image/gameover.png')
 gameover_rect = gameover.get_rect()
 
@@ -46,19 +47,19 @@ class Map:
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ]
-        self.netz_color = [[bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg],
-                           [bg, bg, bg, bg, bg, bg, bg, bg, bg, bg], ]
+        self.netz_color = [['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg'],
+                           ['bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg', 'bg']
+                           ]
 
         self.bg_image = pygame.image.load(bg)
-        self.setted = []
         self.score = 0
         self.score_font = pygame.font.SysFont('microsoft Yahei', 40)
 
@@ -77,65 +78,50 @@ class Map:
                     return False
         return canput
 
-    def set(self, object, row, line, color):
-        for i in range(len(object)):
-            for j in range(len(object[i])):
-                self.netz[row + i][line + j] += object[i][j]
-
-        self.setted.append((object, row, line, color))
+    def set(self, shape, row, line, color):
+        for i in range(len(shape)):
+            for j in range(len(shape[i])):
+                self.netz[row + i][line + j] += shape[i][j]
+                if shape[i][j] == 1:
+                    self.netz_color[row + i][line + j] = color
 
     def check_eliminate(self):
         for i in range(10):
             if self.netz[i] == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]:
                 for j in range(10):
                     self.netz[i][j] = 0
+                    self.netz_color[i][j] = 'bg'
                     self.score += 1
         for i in range(10):
             line = [j[i] for j in self.netz]
             if line == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]:
                 for j in range(10):
                     self.netz[j][i] = 0
+                    self.netz_color[j][i] = 'bg'
                     self.score += 1
 
     def buildmap(self, display):
-        for obj in self.setted:
-            shape = obj[0]
-            row = obj[1]
-            line = obj[2]
-            color = obj[3]
-            setted_image = pygame.image.load(color)
-            setted_rect = setted_image.get_rect()
-            y = row * 40 + 100
-            for i in range(len(shape)):
-                x = line * 40 + 100
-                for j in range(len(shape[i])):
-                    if shape[i][j] == 1 and self.netz[row + i][line + j] == 1:
-                        setted_rect.left = x
-                        setted_rect.top = y
-                        display.blit(setted_image, setted_rect)
-                    x = x + 40
-                y = y + 40
-
         y = 100
-        for i in self.netz:
+        for i in range(10):
             x = 100
-            for j in i:
-                if j == 0:
-                    display.blit(self.bg_image, (x, y))  # 矩阵为0的位置放置背景色块
-                """else:
-                    display.blit(color_image, (x, y)) """  # 矩阵为1的位置放置颜色色块
+            for j in range(10):
+                display.blit(self.get_color_image(self.netz_color[i][j]), (x, y))  # 根据颜色矩阵放置不同颜色的色块
                 x = x + 40
             y = y + 40
 
+    def get_color_image(self, color):
+        color_image = color_lib[color]
+        return color_image
+
     def show_score(self, display):
-        self.font_surface = self.score_font.render(('SCORE: ' + str(self.score)), False, (255, 200, 10))
-        display.blit(self.font_surface, (240, 20))
+        font_surface = self.score_font.render(('SCORE: ' + str(self.score)), False, (255, 200, 10))
+        display.blit(font_surface, (230, 20))
 
 
 class Square:
     def square_gen(self):
         self.shape, self.color = np.array(random.choice(objectlib.objectlib), dtype=object)  # 随机创建图形
-        self.color_image = pygame.image.load(self.color)
+        self.color_image = color_lib[self.color]
         self.color_rect = self.color_image.get_rect()
 
     def blitsquare(self, display, pos):
@@ -149,6 +135,16 @@ class Square:
                     display.blit(self.color_image, self.color_rect)
                 x = x + 40
             y = y + 40
+
+
+def check_gameover(map, display, sq):
+    gamecon = False
+    for row in range(10):
+        for line in range(10):
+            gamecon = map.canput(sq.shape, row, line) or gamecon
+    if not gamecon:
+        gameover_rect.left, gameover_rect.top = 0, 300
+        display.blit(gameover, gameover_rect)
 
 
 def run_game():
@@ -167,14 +163,7 @@ def run_game():
         display.fill(BLACK)
         map.buildmap(display)
         map.show_score(display)
-        gamecon = False
-        for row in range(10):
-            for line in range(10):
-                gamecon = map.canput(sq.shape, row, line) or gamecon
-        if not gamecon:
-            gameover_rect.left, gameover_rect.top = 0, 300
-            display.blit(gameover, gameover_rect)
-
+        check_gameover(map, display, sq)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -205,7 +194,7 @@ def run_game():
             x, y = pygame.mouse.get_pos()
             sq.blitsquare(display, (x, y))
         pygame.display.flip()
-        clock.tick(120)
+        clock.tick(60)
 
 
 if __name__ == '__main__':

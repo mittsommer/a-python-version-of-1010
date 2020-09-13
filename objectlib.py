@@ -26,8 +26,10 @@ red = 'image/red.png'
 orange = 'image/orange.png'
 cyan = 'image/cyan.png'
 purple = "image/purple.png"
-objectlib = [(one, purple), (two, yellow), (two2, yellow), (three, orange), (three2, orange), (three3, cyan),
-             (three4, cyan),
-             (three5, cyan), (three6, cyan), (four, green), (four2, pink), (four3, pink), (five, blue), (five2, blue),
-             (five3, blue),
-             (five4, blue), (five5, red), (five6, red), (nine, cyan)]
+objectlib = [(one, 'purple'), (two, 'yellow'), (two2, 'yellow'), (three, 'orange'), (three2, 'orange'),
+             (three3, 'cyan'),
+             (three4, 'cyan'),
+             (three5, 'cyan'), (three6, 'cyan'), (four, 'green'), (four2, 'pink'), (four3, 'pink'), (five, 'blue'),
+             (five2, 'blue'),
+             (five3, 'blue'),
+             (five4, 'blue'), (five5, 'red'), (five6, 'red'), (nine, 'cyan')]
